@@ -1,12 +1,42 @@
 version: "3.9"
 
 services:
+  stg-service:
+    build:
+      context: ./service_stg
+      network: host
+    image: stg_service:local
+    container_name: stg_service_container
+    env_file:
+      - .env
+    environment:
+      FLASK_APP: ${SAMPLE_SERVICE_APP_NAME:-sample_service}
+      DEBUG: ${SAMPLE_SERVICE_DEBUG:-True}
+
+      KAFKA_HOST: ${KAFKA_HOST}
+      KAFKA_PORT: ${KAFKA_PORT}
+      KAFKA_CONSUMER_USERNAME: ${KAFKA_CONSUMER_USERNAME}
+      KAFKA_CONSUMER_PASSWORD: ${KAFKA_CONSUMER_PASSWORD}
+      KAFKA_CONSUMER_GROUP: ${KAFKA_CONSUMER_GROUP}
+      KAFKA_SOURCE_TOPIC: ${KAFKA_SOURCE_TOPIC}
+      KAFKA_DESTINATION_TOPIC: ${KAFKA_STG_SERVICE_ORDERS_TOPIC}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    network_mode: "bridge"
+    ports:
+      - "5011:5000"
+    restart: unless-stopped
+
   dds_service:
     build:
       context: ./service_dds
       network: host
     image: dds_service:local
     container_name: dds_service_container
+    env_file:
+      - .env
     environment:
       FLASK_APP: ${DDS_APP:-dds_service}
       DEBUG: ${DDS_DEBUG:-True}
@@ -27,7 +57,7 @@ services:
 
     network_mode: "bridge"
     ports:
-      - "5012:5000"
+      - "5012:5001"
     restart: unless-stopped
 
   cdm_service:
@@ -36,6 +66,8 @@ services:
       network: host
     image: cdm_service:local
     container_name: cdm_service_container
+    env_file:
+      - .env
     environment:
       FLASK_APP: ${CDM_SERVICE_APP:-cdm_service}
       DEBUG: ${CDM_SERVICE_DEBUG:-True}
@@ -55,5 +87,5 @@ services:
 
     network_mode: "bridge"
     ports:
-      - "5013:5000"
+      - "5013:5002"
     restart: unless-stopped

@@ -49,7 +49,7 @@ class KafkaConsumer:
             'auto.offset.reset': 'earliest',
             'enable.auto.commit': False,
             'error_cb': error_callback,
-            'debug': 'all',
+            'debug': 'topic',
             'client.id': 'someclientkey'
         }
 
